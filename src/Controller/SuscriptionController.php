@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Controller\BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -11,16 +11,17 @@ use App\Entity\UserSuscription;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/api', name: 'api_')]
-class SuscriptionController extends AbstractController
+class SuscriptionController extends BaseController
 {
     #[Route('/suscriptions', name: 'suscriptions', methods: ['get'])]
     public function getSuscriptions(EntityManagerInterface $entityManager): JsonResponse
     {
         $suscriptions = $entityManager->getRepository(Suscription::class)->findAllAsArray();
 
-        return $this->json($suscriptions, 200);
+        return $this->json($suscriptions, Response::HTTP_OK);
     }
 
     #[Route('/suscriptions/me', name: 'suscriptions_me', methods: ['get'])]
@@ -30,7 +31,7 @@ class SuscriptionController extends AbstractController
 
         $userSuscriptions = $entityManager->getRepository(UserSuscription::class)->findAllByUserAsArray($content["user_id"]);
 
-        return $this->json($userSuscriptions, 200);
+        return $this->json($userSuscriptions, Response::HTTP_ACCEPTED);
     }
 
     #[Route('/suscriptions/{suscription_id}', name: 'suscription', methods: ['get'])]
@@ -46,7 +47,7 @@ class SuscriptionController extends AbstractController
             'duration' => $suscription->getDuration()
         ];
 
-        return $this->json($data, 200);
+        return $this->json($data, Response::HTTP_OK);
     }
 
     #[Route('/suscriptions/{suscription_id}/subscribe', name: 'suscriptions_subscribe', methods: ['post'])]
@@ -61,7 +62,7 @@ class SuscriptionController extends AbstractController
                 'message' => 'User suscription already exists',
                 'user.id' => $content["user_id"],
                 'suscription.id' => $suscription_id
-            ], 400);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $userSuscription = new UserSuscription();
@@ -80,7 +81,7 @@ class SuscriptionController extends AbstractController
             'message' => 'User suscribed',
             'user.id' => $content["user_id"],
             'suscription.id' => $suscription_id,
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 
     #[Route('/suscriptions/{suscription_id}/unsubscribe', name: 'suscriptions_unsubscribe', methods: ['post'])]
@@ -95,7 +96,7 @@ class SuscriptionController extends AbstractController
                 'message' => 'User suscription not found',
                 'user.id' => $content["user_id"],
                 'suscription.id' => $suscription_id
-            ], 400);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $entityManager->remove($user_suscription);
@@ -105,6 +106,6 @@ class SuscriptionController extends AbstractController
             'message' => 'User unsuscribed',
             'user.id' => $content["user_id"],
             'suscription.id' => $suscription_id,
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 }

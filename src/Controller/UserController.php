@@ -10,6 +10,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/api', name: 'api_')]
 class UserController extends AbstractController
@@ -25,20 +26,20 @@ class UserController extends AbstractController
             return $this->json([
                 'message' => 'User not found',
                 'user.email' => $content["email"],
-            ], 404);
+            ], Response::HTTP_NOT_FOUND);
         } else {
             if ($user->getPassword() != md5($content["password"])) {
                 return $this->json([
                     'message' => 'Password incorrect',
                     'user.email' => $user->getEmail(),
-                ], 403);
+                ], Response::HTTP_FORBIDDEN);
             }            
         }
 
         return $this->json([
             'message' => 'User logged in',
             'user.email' => $user->getEmail(),
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     #[Route('/auth/register', name: 'auth_register', methods: ['post'])]
@@ -52,7 +53,7 @@ class UserController extends AbstractController
             return $this->json([
                 'message' => 'User already exists',
                 'user.email' => $content["email"],
-            ], 400);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $user = new User();
@@ -66,6 +67,6 @@ class UserController extends AbstractController
         return $this->json([
             'message' => 'New user created',
             'user.id' => $user->getId(),
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 }
