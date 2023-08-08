@@ -6,6 +6,8 @@ use App\Entity\UserSuscription;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use Doctrine\ORM\Query;
+
 /**
  * @extends ServiceEntityRepository<UserSuscription>
  *
@@ -36,13 +38,25 @@ class UserSuscriptionRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?UserSuscription
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+   public function findOneByUserSuscription($user_id, $suscription_id): ?UserSuscription
+   {
+       return $this->createQueryBuilder('us')
+           ->andWhere('us.user_id = :userId')
+           ->andWhere('us.suscription_id = :suscriptionId')
+           ->setParameter('userId', $user_id)
+           ->setParameter('suscriptionId', $suscription_id)
+           ->getQuery()
+           ->getOneOrNullResult()
+       ;
+   }
+
+   public function findAllByUserAsArray($user_id): array
+   {
+       return $this->createQueryBuilder('us')
+           ->andWhere('us.user_id = :userId')
+           ->setParameter('userId', $user_id)
+           ->getQuery()
+           ->getResult(Query::HYDRATE_ARRAY)
+       ;
+   }
 }
