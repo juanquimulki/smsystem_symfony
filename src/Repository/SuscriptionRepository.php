@@ -6,6 +6,8 @@ use App\Entity\Suscription;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use Doctrine\ORM\Query;
+
 /**
  * @extends ServiceEntityRepository<Suscription>
  *
@@ -24,17 +26,14 @@ class SuscriptionRepository extends ServiceEntityRepository
 //    /**
 //     * @return Suscription[] Returns an array of Suscription objects
 //     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+   public function findAllAsArray(): array
+   {
+       return $this->createQueryBuilder('s')
+           ->orderBy('s.id', 'ASC')
+           ->getQuery()
+           ->getResult(Query::HYDRATE_ARRAY)
+       ;
+   }
 
 //    public function findOneBySomeField($value): ?Suscription
 //    {
