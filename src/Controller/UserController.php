@@ -7,25 +7,38 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\User;
-use App\DTO\UserDTO;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/api', name: 'api_')]
 class UserController extends AbstractController
 {
-    #[Route('/auth/login/{id}', name: 'auth_login')]
-    public function userAuthLogin(EntityManagerInterface $entityManager, int $id): JsonResponse
+    #[Route('/auth/login', name: 'auth_login', methods: ['post'])]
+    public function userAuthLogin(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
-        $user = $entityManager->getRepository(User::class)->find($id);
+        $content = json_decode($request->getContent(), true);
+        
+        $user = $entityManager->getRepository(User::class)->findOneByEmail($content["email"]);
+
+        if (!$user) {
+            return $this->json([
+                'message' => 'User not found',
+                'user.email' => $content["email"],
+            ], 404);
+        } else {
+            if ($user->getPassword() != md5($content["password"])) {
+                return $this->json([
+                    'message' => 'Password incorrect',
+                    'user.email' => $user->getEmail(),
+                ], 403);
+            }            
+        }
 
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/UserController.php',
-            'user' => $user->getName(),
-        ]);
+            'message' => 'User logged in',
+            'user.email' => $user->getEmail(),
+        ], 200);
     }
 
     #[Route('/auth/register', name: 'auth_register', methods: ['post'])]
@@ -33,17 +46,26 @@ class UserController extends AbstractController
     {
         $content = json_decode($request->getContent(), true);
 
+        $user = $entityManager->getRepository(User::class)->findOneByEmail($content["email"]);
+
+        if ($user) {
+            return $this->json([
+                'message' => 'User already exists',
+                'user.email' => $content["email"],
+            ], 400);
+        }
+
         $user = new User();
         $user->setName($content["name"]);
         $user->setEmail($content["email"]);
-        $user->setPassword($content["password"]);
+        $user->setPassword(md5($content["password"]));
 
         $entityManager->persist($user);
         $entityManager->flush();
 
         return $this->json([
             'message' => 'New user created',
-            'user' => $user->getId(),
-        ]);
+            'user.id' => $user->getId(),
+        ], 201);
     }
 }
