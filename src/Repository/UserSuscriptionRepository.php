@@ -7,6 +7,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 use Doctrine\ORM\Query;
+use App\Entity\User;
+use App\Entity\Suscription;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * @extends ServiceEntityRepository<UserSuscription>
@@ -53,6 +56,9 @@ class UserSuscriptionRepository extends ServiceEntityRepository
    public function findAllByUserAsArray($user_id): array
    {
        return $this->createQueryBuilder('us')
+           ->select('us.id, s.name as suscription_name, u.name as user_name, us.start_date, us.end_date')
+           ->leftJoin(User::class, 'u', Join::WITH, 'us.user_id = u.id')
+           ->leftJoin(Suscription::class, 's', Join::WITH, 'us.suscription_id = s.id')
            ->andWhere('us.user_id = :userId')
            ->setParameter('userId', $user_id)
            ->getQuery()
