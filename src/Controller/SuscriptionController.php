@@ -69,8 +69,8 @@ class SuscriptionController extends BaseController
         if ($user_suscription) {
             return $this->json([
                 'message' => 'User suscription already exists',
-                'user.id' => $content["user_id"],
-                'suscription.id' => $suscription_id
+                'userid' => $content["user_id"],
+                'suscriptionid' => $suscription_id
             ], Response::HTTP_BAD_REQUEST);
         }
 
@@ -88,8 +88,8 @@ class SuscriptionController extends BaseController
 
         return $this->json([
             'message' => 'User suscribed',
-            'user.id' => $content["user_id"],
-            'suscription.id' => $suscription_id,
+            'userid' => $content["user_id"],
+            'suscriptionid' => $suscription_id,
         ], Response::HTTP_CREATED);
     }
 
@@ -106,8 +106,8 @@ class SuscriptionController extends BaseController
         if (!$user_suscription) {
             return $this->json([
                 'message' => 'User suscription not found',
-                'user.id' => $content["user_id"],
-                'suscription.id' => $suscription_id
+                'userid' => $content["user_id"],
+                'suscriptionid' => $suscription_id
             ], Response::HTTP_BAD_REQUEST);
         }
 
@@ -116,8 +116,8 @@ class SuscriptionController extends BaseController
 
         return $this->json([
             'message' => 'User unsuscribed',
-            'user.id' => $content["user_id"],
-            'suscription.id' => $suscription_id,
+            'userid' => $content["user_id"],
+            'suscriptionid' => $suscription_id,
         ], Response::HTTP_CREATED);
     }
 }

@@ -17,9 +17,11 @@ use Firebase\JWT\JWT;
 #[Route('/api', name: 'api_')]
 class UserController extends BaseController
 {
-    #[Route('/auth/login', name: 'auth_login', methods: ['post'])]
+    #[Route('/auth/login', name: 'auth_login', methods: ['post', 'options'])]
     public function userAuthLogin(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
+        if ($request->isMethod('OPTIONS')) die();
+
         $content = json_decode($request->getContent(), true);
         
         $user = $entityManager->getRepository(User::class)->findOneByEmail($content["email"]);
@@ -27,13 +29,13 @@ class UserController extends BaseController
         if (!$user) {
             return $this->json([
                 'message' => 'User not found',
-                'user.email' => $content["email"],
+                'email' => $content["email"],
             ], Response::HTTP_NOT_FOUND);
         } else {
             if ($user->getPassword() != md5($content["password"])) {
                 return $this->json([
                     'message' => 'Password incorrect',
-                    'user.email' => $user->getEmail(),
+                    'email' => $user->getEmail(),
                 ], Response::HTTP_FORBIDDEN);
             }            
         }
@@ -42,14 +44,17 @@ class UserController extends BaseController
 
         return $this->json([
             'message' => 'User logged in',
-            'user.email' => $user->getEmail(),
-            'user.token' => $token
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
+            'token' => $token
         ], Response::HTTP_OK);
     }
 
-    #[Route('/auth/register', name: 'auth_register', methods: ['post'])]
+    #[Route('/auth/register', name: 'auth_register', methods: ['post', 'options'])]
     public function userAuthRegister(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
+        if ($request->isMethod('OPTIONS')) die();
+
         $content = json_decode($request->getContent(), true);
 
         $user = $entityManager->getRepository(User::class)->findOneByEmail($content["email"]);
@@ -71,7 +76,7 @@ class UserController extends BaseController
 
         return $this->json([
             'message' => 'New user created',
-            'user.id' => $user->getId(),
+            'id' => $user->getId(),
         ], Response::HTTP_CREATED);
     }
 }

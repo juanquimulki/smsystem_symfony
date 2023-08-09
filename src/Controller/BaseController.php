@@ -18,6 +18,7 @@ abstract class BaseController extends AbstractController
     public function getToken($user) : string
     {
         $issuedAt = time();
+        // valid for 30 days
         $expirationTime = $issuedAt + 30 * (60 * 60 * 24);
 
         $payload = [
