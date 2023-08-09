@@ -15,12 +15,25 @@ use UnexpectedValueException;
 
 abstract class BaseController extends AbstractController
 {
+    public function getToken($user) : string
+    {
+        $issuedAt = time();
+        $expirationTime = $issuedAt + 30 * (60 * 60 * 24);
+
+        $payload = [
+            "user_id" => $user->getId(),
+            "user_name" => $user->getName(),
+            "user_email" => $user->getEmail(),
+            "exp" => $expirationTime
+        ];
+        
+        return JWT::encode($payload, $this->getParameter('app.secret'), 'HS256');
+    }
+
     public function allowAccess(string $token) : bool
     {
-        $key = 'example_key';
-
         try {
-            $decoded = JWT::decode("1234", new Key($key, 'HS256'));
+            $decoded = JWT::decode($token, new Key($this->getParameter('app.secret'), 'HS256'));
             return true;
         } catch (InvalidArgumentException $e) {
             // provided key/key-array is empty or malformed.

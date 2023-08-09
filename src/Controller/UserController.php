@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Controller\BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Firebase\JWT\JWT;
 
 #[Route('/api', name: 'api_')]
-class UserController extends AbstractController
+class UserController extends BaseController
 {
     #[Route('/auth/login', name: 'auth_login', methods: ['post'])]
     public function userAuthLogin(EntityManagerInterface $entityManager, Request $request): JsonResponse
@@ -38,19 +38,7 @@ class UserController extends AbstractController
             }            
         }
 
-        /* creating access token */
-        $issuedAt = time();
-        // valid for 30 days
-        $expirationTime = $issuedAt + 30 * (60 * 60 * 24);
-
-        $key = 'example_key';
-        $payload = [
-            "user_id" => $user->getId(),
-            "user_name" => $user->getName(),
-            "user_email" => $user->getEmail(),
-            "exp" => $expirationTime
-        ];
-        $token = JWT::encode($payload, $key, 'HS256');
+        $token = $this->getToken($user);
 
         return $this->json([
             'message' => 'User logged in',
