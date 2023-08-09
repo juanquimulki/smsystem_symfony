@@ -40,6 +40,9 @@ class SuscriptionController extends BaseController
     #[Route('/suscriptions/{suscription_id}', name: 'suscription', methods: ['get'])]
     public function getSuscription(EntityManagerInterface $entityManager, int $suscription_id): JsonResponse
     {
+        if (!$this->allowAccess($request->headers->get('Authorization'))) 
+            return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
+
         $suscription = $entityManager->getRepository(Suscription::class)->find($suscription_id);
 
         $data =  [
@@ -56,6 +59,9 @@ class SuscriptionController extends BaseController
     #[Route('/suscriptions/{suscription_id}/subscribe', name: 'suscriptions_subscribe', methods: ['post'])]
     public function userSubscribe(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
+        if (!$this->allowAccess($request->headers->get('Authorization'))) 
+            return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
+
         $content = json_decode($request->getContent(), true);
 
         $user_suscription = $entityManager->getRepository(UserSuscription::class)->findOneByUserSuscription($content["user_id"], $suscription_id);
@@ -90,6 +96,9 @@ class SuscriptionController extends BaseController
     #[Route('/suscriptions/{suscription_id}/unsubscribe', name: 'suscriptions_unsubscribe', methods: ['post'])]
     public function userUnsubscribe(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
+        if (!$this->allowAccess($request->headers->get('Authorization'))) 
+            return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
+
         $content = json_decode($request->getContent(), true);
 
         $user_suscription = $entityManager->getRepository(UserSuscription::class)->findOneByUserSuscription($content["user_id"], $suscription_id);
