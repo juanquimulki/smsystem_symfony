@@ -27,6 +27,9 @@ class SuscriptionController extends BaseController
     #[Route('/suscriptions/me', name: 'suscriptions_me', methods: ['get'])]
     public function getUserSuscriptions(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
+        if (!$this->allowAccess($request->headers->get('Authorization'))) 
+            return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
+
         $content = json_decode($request->getContent(), true);
 
         $userSuscriptions = $entityManager->getRepository(UserSuscription::class)->findAllByUserAsArray($content["user_id"]);

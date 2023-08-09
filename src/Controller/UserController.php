@@ -12,6 +12,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Firebase\JWT\JWT;
+
 #[Route('/api', name: 'api_')]
 class UserController extends AbstractController
 {
@@ -36,9 +38,24 @@ class UserController extends AbstractController
             }            
         }
 
+        /* creating access token */
+        $issuedAt = time();
+        // valid for 30 days
+        $expirationTime = $issuedAt + 30 * (60 * 60 * 24);
+
+        $key = 'example_key';
+        $payload = [
+            "user_id" => $user->getId(),
+            "user_name" => $user->getName(),
+            "user_email" => $user->getEmail(),
+            "exp" => $expirationTime
+        ];
+        $token = JWT::encode($payload, $key, 'HS256');
+
         return $this->json([
             'message' => 'User logged in',
             'user.email' => $user->getEmail(),
+            'user.token' => $token
         ], Response::HTTP_OK);
     }
 
