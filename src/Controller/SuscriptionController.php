@@ -38,7 +38,7 @@ class SuscriptionController extends BaseController
 
         $userSuscriptions = $entityManager->getRepository(UserSuscription::class)->findAllByUserAsArray($content["user_id"]);
 
-        return $this->json($userSuscriptions, Response::HTTP_ACCEPTED);
+        return $this->json($userSuscriptions, Response::HTTP_OK);
     }
 
     #[Route('/suscriptions/{suscription_id}', name: 'suscription', methods: ['get'])]
@@ -129,7 +129,7 @@ class SuscriptionController extends BaseController
         ], Response::HTTP_CREATED);
     }
 
-    #[Route('/suscriptions/{suscription_id}/status/{status}', name: 'suscriptions_unsubscribe', methods: ['post', 'options'])]
+    #[Route('/suscriptions/{suscription_id}/status/{status}', name: 'suscriptions_status', methods: ['post', 'options'])]
     public function changeStatus(EntityManagerInterface $entityManager, int $suscription_id, string $status, Request $request): JsonResponse
     {
         if ($request->isMethod('OPTIONS')) die();
