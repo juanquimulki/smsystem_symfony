@@ -99,7 +99,7 @@ class SuscriptionController extends BaseController
      * @Route("/suscriptions/{suscription_id}/subscribe", name="suscriptions_subscribe", methods="POST")
      * @OA\Parameter(
      *     name="Authorization",
-     *     in="header"
+     *     in="header",
      *     @OA\Schema(type="string")
      * )
      * @OA\Parameter(
@@ -109,7 +109,7 @@ class SuscriptionController extends BaseController
      * )
      * @OA\Parameter(
      *     name="user_id",
-     *     in="query"
+     *     in="query",
      *     @OA\Schema(type="integer")
      * )
      */    
@@ -122,6 +122,7 @@ class SuscriptionController extends BaseController
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
 
         $content = json_decode($request->getContent(), true);
+        if (!$content) $content = $request->query->all();
 
         $user_suscription = $entityManager->getRepository(UserSuscription::class)->findOneByUserSuscription($content["user_id"], $suscription_id);
 
@@ -179,6 +180,7 @@ class SuscriptionController extends BaseController
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
 
         $content = json_decode($request->getContent(), true);
+        if (!$content) $content = $request->query->all();
 
         $user_suscription = $entityManager->getRepository(UserSuscription::class)->findOneByUserSuscription($content["user_id"], $suscription_id);
 
@@ -227,6 +229,7 @@ class SuscriptionController extends BaseController
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
 
         $content = json_decode($request->getContent(), true);
+        if (!$content) $content = $request->query->all();
 
         $user_suscription = $entityManager->getRepository(UserSuscription::class)->findOneByUserSuscription($content["user_id"], $suscription_id);
 

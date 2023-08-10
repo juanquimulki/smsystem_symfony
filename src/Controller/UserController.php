@@ -25,6 +25,16 @@ class UserController extends BaseController
 {
     /**
      * @Route("/auth/login", name="auth_login", methods="POST")
+     * @OA\Parameter(
+     *     name="email",
+     *     in="query",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="password",
+     *     in="query",
+     *     @OA\Schema(type="string")
+     * )
      */
     #[Route('/auth/login', name: 'auth_login', methods: ['post', 'options'])]
     public function userAuthLogin(EntityManagerInterface $entityManager, Request $request): JsonResponse
@@ -32,6 +42,7 @@ class UserController extends BaseController
         if ($request->isMethod('OPTIONS')) die();
 
         $content = json_decode($request->getContent(), true);
+        if (!$content) $content = $request->query->all();
         
         $user = $entityManager->getRepository(User::class)->findOneByEmail($content["email"]);
 
@@ -63,11 +74,6 @@ class UserController extends BaseController
     /**
      * @Route("/auth/register", name="auth_register", methods="POST")
      * @OA\Parameter(
-     *     name="Authorization",
-     *     in="header",
-     *     @OA\Schema(type="string")
-     * )
-     * @OA\Parameter(
      *     name="name",
      *     in="query",
      *     @OA\Schema(type="string")
@@ -89,6 +95,7 @@ class UserController extends BaseController
         if ($request->isMethod('OPTIONS')) die();
 
         $content = json_decode($request->getContent(), true);
+        if (!$content) $content = $request->query->all();
 
         $user = $entityManager->getRepository(User::class)->findOneByEmail($content["email"]);
 
