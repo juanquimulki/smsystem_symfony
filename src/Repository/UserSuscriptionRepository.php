@@ -56,7 +56,7 @@ class UserSuscriptionRepository extends ServiceEntityRepository
    public function findAllByUserAsArray($user_id): array
    {
        return $this->createQueryBuilder('us')
-           ->select('us.id, s.name as suscription_name, u.name as user_name, us.start_date, us.end_date')
+           ->select('s.id, s.name, s.price, us.status, us.start_date, us.end_date')
            ->leftJoin(User::class, 'u', Join::WITH, 'us.user_id = u.id')
            ->leftJoin(Suscription::class, 's', Join::WITH, 'us.suscription_id = s.id')
            ->andWhere('us.user_id = :userId')

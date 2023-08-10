@@ -24,13 +24,17 @@ class SuscriptionController extends BaseController
         return $this->json($suscriptions, Response::HTTP_OK);
     }
 
-    #[Route('/suscriptions/me', name: 'suscriptions_me', methods: ['get'])]
+    #[Route('/suscriptions/me', name: 'suscriptions_me', methods: ['get', 'options'])]
     public function getUserSuscriptions(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
+        if ($request->isMethod('OPTIONS')) die();
+
+        $value = $request->headers->get('Authorization');
         if (!$this->allowAccess($request->headers->get('Authorization'))) 
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
 
         $content = json_decode($request->getContent(), true);
+        if (!$content) $content = $request->query->all();
 
         $userSuscriptions = $entityManager->getRepository(UserSuscription::class)->findAllByUserAsArray($content["user_id"]);
 
@@ -95,9 +99,11 @@ class SuscriptionController extends BaseController
         ], Response::HTTP_CREATED);
     }
 
-    #[Route('/suscriptions/{suscription_id}/unsubscribe', name: 'suscriptions_unsubscribe', methods: ['post'])]
+    #[Route('/suscriptions/{suscription_id}/unsubscribe', name: 'suscriptions_unsubscribe', methods: ['post', 'options'])]
     public function userUnsubscribe(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
+        if ($request->isMethod('OPTIONS')) die();
+        
         if (!$this->allowAccess($request->headers->get('Authorization'))) 
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
 
