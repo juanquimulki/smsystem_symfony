@@ -23,7 +23,7 @@ use OpenApi\Annotations as OA;
 class SuscriptionController extends BaseController
 {
     /**
-     * @Route("/suscriptions", name="suscriptions", methods="GET")
+     * @Route("/suscriptions", name="suscriptions")
      */
     #[Route('/suscriptions', name: 'suscriptions', methods: ['get'])]
     public function getSuscriptions(EntityManagerInterface $entityManager): JsonResponse
@@ -34,7 +34,7 @@ class SuscriptionController extends BaseController
     }
 
     /**
-     * @Route("/suscriptions/me", name="suscriptions_me", methods="GET")
+     * @Route("/suscriptions/me", name="suscriptions_me")
      * @OA\Parameter(
      *     name="Authorization",
      *     in="header",
@@ -64,7 +64,7 @@ class SuscriptionController extends BaseController
     }
 
     /**
-     * @Route("/suscriptions/{suscription_id}", name="suscription", methods="GET")
+     * @Route("/suscriptions/{suscription_id}", name="suscription")
      * @OA\Parameter(
      *     name="Authorization",
      *     in="header",
@@ -96,7 +96,7 @@ class SuscriptionController extends BaseController
     }
 
     /**
-     * @Route("/suscriptions/{suscription_id}/subscribe", name="suscriptions_subscribe", methods="POST")
+     * @Route("/suscriptions/{suscription_id}/subscribe", name="suscriptions_subscribe")
      * @OA\Parameter(
      *     name="Authorization",
      *     in="header",
@@ -154,7 +154,7 @@ class SuscriptionController extends BaseController
     }
 
     /**
-     * @Route("/suscriptions/{suscription_id}/unsubscribe", name="suscriptions_unsubscribe", methods="POST")
+     * @Route("/suscriptions/{suscription_id}/unsubscribe", name="suscriptions_unsubscribe")
      * @OA\Parameter(
      *     name="Authorization",
      *     in="header",
@@ -203,7 +203,7 @@ class SuscriptionController extends BaseController
     }
 
     /**
-     * @Route("/suscriptions/{suscription_id}/status/{status}", name="suscriptions_status", methods="POST")
+     * @Route("/suscriptions/{suscription_id}/status/{status}", name="suscriptions_status")
      * @OA\Parameter(
      *     name="Authorization",
      *     in="header",

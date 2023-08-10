@@ -24,7 +24,7 @@ use OpenApi\Annotations as OA;
 class UserController extends BaseController
 {
     /**
-     * @Route("/auth/login", name="auth_login", methods="POST")
+     * @Route("/auth/login", name="auth_login")
      * @OA\Parameter(
      *     name="email",
      *     in="query",
@@ -72,7 +72,7 @@ class UserController extends BaseController
     }
 
     /**
-     * @Route("/auth/register", name="auth_register", methods="POST")
+     * @Route("/auth/register", name="auth_register")
      * @OA\Parameter(
      *     name="name",
      *     in="query",
