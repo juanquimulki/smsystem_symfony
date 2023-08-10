@@ -56,9 +56,11 @@ class SuscriptionController extends BaseController
         return $this->json($data, Response::HTTP_OK);
     }
 
-    #[Route('/suscriptions/{suscription_id}/subscribe', name: 'suscriptions_subscribe', methods: ['post'])]
+    #[Route('/suscriptions/{suscription_id}/subscribe', name: 'suscriptions_subscribe', methods: ['post', 'options'])]
     public function userSubscribe(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
+        if ($request->isMethod('OPTIONS')) die();
+
         if (!$this->allowAccess($request->headers->get('Authorization'))) 
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
 

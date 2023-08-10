@@ -31,11 +31,15 @@ abstract class BaseController extends AbstractController
         return JWT::encode($payload, $this->getParameter('app.secret'), 'HS256');
     }
 
-    public function allowAccess(string $token) : bool
+    public function allowAccess(?string $token) : bool
     {
         try {
-            $decoded = JWT::decode($token, new Key($this->getParameter('app.secret'), 'HS256'));
-            return true;
+            if ($token) {
+                $decoded = JWT::decode($token, new Key($this->getParameter('app.secret'), 'HS256'));
+                return true;
+            } else {
+                return false;
+            }
         } catch (InvalidArgumentException $e) {
             // provided key/key-array is empty or malformed.
             return false;

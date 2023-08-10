@@ -44,6 +44,7 @@ class UserController extends BaseController
 
         return $this->json([
             'message' => 'User logged in',
+            'id' => $user->getId(),
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'token' => $token
