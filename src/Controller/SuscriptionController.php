@@ -13,9 +13,18 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use OpenApi\Annotations as OA;
+
+/**
+ * @Route("/api", name="api_")
+ * @OA\Tag(name="Suscriptions")
+ */
 #[Route('/api', name: 'api_')]
 class SuscriptionController extends BaseController
 {
+    /**
+     * @Route("/suscriptions", name="suscriptions", methods="GET")
+     */
     #[Route('/suscriptions', name: 'suscriptions', methods: ['get'])]
     public function getSuscriptions(EntityManagerInterface $entityManager): JsonResponse
     {
@@ -24,6 +33,19 @@ class SuscriptionController extends BaseController
         return $this->json($suscriptions, Response::HTTP_OK);
     }
 
+    /**
+     * @Route("/suscriptions/me", name="suscriptions_me", methods="GET")
+     * @OA\Parameter(
+     *     name="Authorization",
+     *     in="header",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="user_id",
+     *     in="query",
+     *     @OA\Schema(type="integer")
+     * )
+     */
     #[Route('/suscriptions/me', name: 'suscriptions_me', methods: ['get', 'options'])]
     public function getUserSuscriptions(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
@@ -41,8 +63,21 @@ class SuscriptionController extends BaseController
         return $this->json($userSuscriptions, Response::HTTP_OK);
     }
 
+    /**
+     * @Route("/suscriptions/{suscription_id}", name="suscription", methods="GET")
+     * @OA\Parameter(
+     *     name="Authorization",
+     *     in="header",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="suscription_id",
+     *     in="path",
+     *     @OA\Schema(type="integer")
+     * )
+     */
     #[Route('/suscriptions/{suscription_id}', name: 'suscription', methods: ['get'])]
-    public function getSuscription(EntityManagerInterface $entityManager, int $suscription_id): JsonResponse
+    public function getSuscription(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
         if (!$this->allowAccess($request->headers->get('Authorization'))) 
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
@@ -60,6 +95,24 @@ class SuscriptionController extends BaseController
         return $this->json($data, Response::HTTP_OK);
     }
 
+    /**
+     * @Route("/suscriptions/{suscription_id}/subscribe", name="suscriptions_subscribe", methods="POST")
+     * @OA\Parameter(
+     *     name="Authorization",
+     *     in="header"
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="suscription_id",
+     *     in="path",
+     *     @OA\Schema(type="integer")
+     * )
+     * @OA\Parameter(
+     *     name="user_id",
+     *     in="query"
+     *     @OA\Schema(type="integer")
+     * )
+     */    
     #[Route('/suscriptions/{suscription_id}/subscribe', name: 'suscriptions_subscribe', methods: ['post', 'options'])]
     public function userSubscribe(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
@@ -99,6 +152,24 @@ class SuscriptionController extends BaseController
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * @Route("/suscriptions/{suscription_id}/unsubscribe", name="suscriptions_unsubscribe", methods="POST")
+     * @OA\Parameter(
+     *     name="Authorization",
+     *     in="header",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="suscription_id",
+     *     in="path",
+     *     @OA\Schema(type="integer")
+     * )
+     * @OA\Parameter(
+     *     name="user_id",
+     *     in="query",
+     *     @OA\Schema(type="integer")
+     * )
+     */ 
     #[Route('/suscriptions/{suscription_id}/unsubscribe', name: 'suscriptions_unsubscribe', methods: ['post', 'options'])]
     public function userUnsubscribe(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
@@ -129,6 +200,24 @@ class SuscriptionController extends BaseController
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * @Route("/suscriptions/{suscription_id}/status/{status}", name="suscriptions_status", methods="POST")
+     * @OA\Parameter(
+     *     name="Authorization",
+     *     in="header",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="suscription_id",
+     *     in="path",
+     *     @OA\Schema(type="integer")
+     * )
+     * @OA\Parameter(
+     *     name="status",
+     *     in="query",
+     *     @OA\Schema(type="string")
+     * )
+     */     
     #[Route('/suscriptions/{suscription_id}/status/{status}', name: 'suscriptions_status', methods: ['post', 'options'])]
     public function changeStatus(EntityManagerInterface $entityManager, int $suscription_id, string $status, Request $request): JsonResponse
     {

@@ -14,9 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Firebase\JWT\JWT;
 
+use OpenApi\Annotations as OA;
+
+/**
+ * @Route("/api", name="api_")
+ * @OA\Tag(name="Users")
+ */
 #[Route('/api', name: 'api_')]
 class UserController extends BaseController
 {
+    /**
+     * @Route("/auth/login", name="auth_login", methods="POST")
+     */
     #[Route('/auth/login', name: 'auth_login', methods: ['post', 'options'])]
     public function userAuthLogin(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
@@ -51,6 +60,29 @@ class UserController extends BaseController
         ], Response::HTTP_OK);
     }
 
+    /**
+     * @Route("/auth/register", name="auth_register", methods="POST")
+     * @OA\Parameter(
+     *     name="Authorization",
+     *     in="header",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="name",
+     *     in="query",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="email",
+     *     in="query",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="password",
+     *     in="query",
+     *     @OA\Schema(type="string")
+     * )
+     */
     #[Route('/auth/register', name: 'auth_register', methods: ['post', 'options'])]
     public function userAuthRegister(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
