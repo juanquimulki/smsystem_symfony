@@ -103,7 +103,7 @@ class SuscriptionController extends BaseController
     public function userUnsubscribe(EntityManagerInterface $entityManager, int $suscription_id, Request $request): JsonResponse
     {
         if ($request->isMethod('OPTIONS')) die();
-        
+
         if (!$this->allowAccess($request->headers->get('Authorization'))) 
             return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
 
@@ -124,6 +124,36 @@ class SuscriptionController extends BaseController
 
         return $this->json([
             'message' => 'User unsuscribed',
+            'userid' => $content["user_id"],
+            'suscriptionid' => $suscription_id,
+        ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/suscriptions/{suscription_id}/status/{status}', name: 'suscriptions_unsubscribe', methods: ['post', 'options'])]
+    public function changeStatus(EntityManagerInterface $entityManager, int $suscription_id, string $status, Request $request): JsonResponse
+    {
+        if ($request->isMethod('OPTIONS')) die();
+        
+        if (!$this->allowAccess($request->headers->get('Authorization'))) 
+            return $this->json($this->invalidTokenMessage(), Response::HTTP_FORBIDDEN);
+
+        $content = json_decode($request->getContent(), true);
+
+        $user_suscription = $entityManager->getRepository(UserSuscription::class)->findOneByUserSuscription($content["user_id"], $suscription_id);
+
+        if (!$user_suscription) {
+            return $this->json([
+                'message' => 'User suscription not found',
+                'userid' => $content["user_id"],
+                'suscriptionid' => $suscription_id
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $user_suscription->setStatus($status);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Status changed',
             'userid' => $content["user_id"],
             'suscriptionid' => $suscription_id,
         ], Response::HTTP_CREATED);
